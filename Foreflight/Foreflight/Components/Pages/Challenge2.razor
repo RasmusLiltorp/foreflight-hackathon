@@ -1,0 +1,56 @@
+@page "/challenge2"
+@using BlazorBootstrap;
+
+@using Foreflight.Components.Services
+@rendermode InteractiveServer
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+<ScatterChart @ref="scatterChart" Width="560" Height="480" />
+
+@code {
+    private ScatterChart scatterChart = default!;
+    private ScatterChartOptions scatterChartOptions = default!;
+    private ChartData chartData = default!;
+
+    private Random random = new();
+
+    protected override void OnInitialized()
+    {
+        var data = new ScatterChartDataset{
+            Label = "Data",
+            Data = GetData(),
+            BorderWidth = 2,
+            HoverBorderWidth = 4,
+        };
+
+        chartData = new ChartData
+        {
+            Datasets = new()
+            {
+                data
+            }
+        };
+
+        scatterChartOptions = new() { };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await scatterChart.InitializeAsync(chartData, scatterChartOptions);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private List<ScatterChartDataPoint> GetData()
+    {
+        var csvService = new CsvService("Challenges/challenge_1_2/GWJI.csv");
+        FilterService filterService = new FilterService(csvService.CsvParser());
+        filterService.StepFilter();
+        return filterService.dataPoints.Select(point => new ScatterChartDataPoint(point.x, point.y)).ToList();
+    }
+}
