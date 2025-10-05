@@ -3,12 +3,34 @@
 @using Foreflight.Components.Services
 @rendermode InteractiveServer
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Challenge 1</PageTitle>
 
 <h1>Challenge 1</h1>
 
-<ScatterChart @ref="scatterChart" Width="560" Height="480" />
+<h2>How the CSV service and chart rendering work</h2>
+<div class="mb-3">
+    <ul>
+        <li>Constructed with a relative path: "Challenges/challenge_1_2/GWJI.csv".</li>
+        <li>CsvParser():
+            <ul>
+                <li>Checks File.Exists(path)</li>
+                <li>Reads line by line with StreamReader.</li>
+                <li>Skips the first line, which we assume is a header</li>
+                <li>Splits each remaining line</li>
+                <li>Makes (x, y) tuples in a List.</li>
+            </ul>
+        </li>
+        <li>CsvScatterChartParser():
+            <ul>
+                <li>Calls CsvParser() to get List of tuples</li>
+                <li>Wraps each tuple as ScatterChartDataPoint (BlazorBootstrap type).</li>
+                <li>Returns List of ScatterChartDataPoint to the page.</li>
+            </ul>
+        </li>
+    </ul>
 
+<ScatterChart @ref="scatterChart" Width="560" Height="480" />
+</div>
 @code {
     private ScatterChart scatterChart = default!;
     private ScatterChartOptions scatterChartOptions = default!;

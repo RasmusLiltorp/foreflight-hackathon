@@ -1,4 +1,4 @@
-@page "/challenge3"
+@page "/challenge4"
 @using BlazorBootstrap;
 
 @using Foreflight.Components.Services
@@ -10,23 +10,27 @@
 
 <h2>Our approach:</h2>
 <ul>
-    <li>Takes the list.</li>
-    <li>Computes slope = y / x for each candidate point.</li>
-    <li>Selects the point with the largest slope.</li>
-    <li>Builds minimal set: start point, critical point.</li>
+    <li>Run StepFilter</li>
+    <li>For each remaining point (x1,y1), try every other point (x2,y2) to form a line.</li>
+    <li>Compute slope m = (y1 - y2)/(x1 - x2)</li>
+    <li>Compute intercept b = y1 - m * x1</li>
+    <li>Keep the point if any positive-slope </li>
+    <li>Discard otherwise.</li>
+    <li>Complexity O(n²)</li>
+
 </ul>
 
 <div class="row g-4">
     <div class="col-auto text-center">
-        <h5>ABPW.csv</h5>
+        <h5>AKIT.csv</h5>
         <ScatterChart @ref="scatterChart1" Width="360" Height="300" />
     </div>
     <div class="col-auto text-center">
-        <h5>EOVE.csv</h5>
+        <h5>BRYU.csv</h5>
         <ScatterChart @ref="scatterChart2" Width="360" Height="300" />
     </div>
     <div class="col-auto text-center">
-        <h5>ZNXP.csv</h5>
+        <h5>WZAU.csv</h5>
         <ScatterChart @ref="scatterChart3" Width="360" Height="300" />
     </div>
 </div>
@@ -43,9 +47,9 @@
 
     protected override void OnInitialized()
     {
-        chartData1 = BuildChartData("Challenges/challenge_3/ABPW.csv");
-        chartData2 = BuildChartData("Challenges/challenge_3/EOVE.csv");
-        chartData3 = BuildChartData("Challenges/challenge_3/ZNXP.csv");
+        chartData1 = BuildChartData("Challenges/challenge_4/AKIT.csv");
+        chartData2 = BuildChartData("Challenges/challenge_4/BRYU.csv");
+        chartData3 = BuildChartData("Challenges/challenge_4/WZAU.csv");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -65,7 +69,7 @@
         {
             var csvService = new CsvService(path);
             var filterService = new FilterService(csvService.CsvParser());
-            filterService.ClimbRateFilter();
+            filterService.ClimbRateFilterWithTakeOffDist(6000);
             var filtered = filterService.dataPoints.Select(p => new ScatterChartDataPoint(p.x, p.y)).ToList();
 
             var dataset = new ScatterChartDataset
